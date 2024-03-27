@@ -22,7 +22,6 @@ export const registerController = async (
   next: NextFunction
 ) => {
   try {
-  //  throw new Error('loi roi')
     const result = await userSevice.register(req.body)
     return res.json({
       message: 'register success',
