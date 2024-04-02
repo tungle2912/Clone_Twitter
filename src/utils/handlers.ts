@@ -1,7 +1,9 @@
-export const wrapAsyn = (func: any) => {
-  return async (req: any, res: any, next: any) => {
+import { promises } from 'dns'
+import express, { Request, Response, NextFunction, RequestHandler } from 'express'
+export const wrapRequestHandler = (func: RequestHandler) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await func(req, res, next).catch(next)
+      await func(req, res, next)
     } catch (err) {
       next(err)
     }

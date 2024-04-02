@@ -21,13 +21,10 @@ export const registerController = async (
   res: Response,
   next: NextFunction
 ) => {
-  try {
-    const result = await userSevice.register(req.body)
-    return res.json({
-      message: 'register success',
-      result
-    })
-  } catch (error) {
-    next(error)
-  }
+  throw new Error('test error')
+  const result = await userSevice.register(req.body)
+  return res.json({
+    message: 'register success',
+    result
+  })
 }
