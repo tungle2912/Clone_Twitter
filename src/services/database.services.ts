@@ -1,6 +1,6 @@
 import { MongoClient, Db, Collection } from 'mongodb'
 import { config } from 'dotenv'
-import User from '~/models/User.schema'
+import User from '~/models/schemas/User.schema'
 config()
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@twitter.0c8mmpd.mongodb.net/?retryWrites=true&w=majority&appName=Twitter`
 
