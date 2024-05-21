@@ -1,13 +1,16 @@
 import { Router } from 'express'
 import {
-  emailVerifyValidator,
+  verifyEmailController,
   loginController,
   logoutController,
-  registerController
+  registerController,
+  resendVerifyEmailController,
+  forgotPasswordController
 } from '~/controllers/users.controllers'
 import {
   accessTokenValidator,
   emailVerifyTokenValidator,
+  forgotPasswordValidator,
   loginValidator,
   refreshTokenValidator,
   registerValidator
@@ -40,6 +43,23 @@ usersRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapReq
  * Method: POST
  * body: { email_verify_token: string }
  */
-usersRouter.post('/verify-email', emailVerifyTokenValidator, wrapRequestHandler(emailVerifyValidator))
+usersRouter.post('/verify-email', emailVerifyTokenValidator, wrapRequestHandler(verifyEmailController))
+
+/**
+ * Description. resend-verify-email when user clinet click on the link in email
+ * Path: /resend-verify-emaill
+ * Method: POST
+ * header: { Authorization: Bearer ${access_token}
+ * body: {}
+ */
+usersRouter.post('/resend-verify-email', accessTokenValidator, wrapRequestHandler(resendVerifyEmailController))
+
+/**
+ * Description.submid email to reset password, sen email to user
+ * Path: /forgot-password
+ * Method: POST
+ * body: {email: string}
+ */
+usersRouter.post('/forgot-password', forgotPasswordValidator, wrapRequestHandler(forgotPasswordController))
 
 export default usersRouter

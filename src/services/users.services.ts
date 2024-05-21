@@ -46,6 +46,18 @@ class UserSevice {
       }
     })
   }
+  private signForgotPasswordToken(user_id: string) {
+    return signToken({
+      payload: {
+        user_id,
+        token_type: TokenType.ForgotPasswordToken
+      },
+      privateKey: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string,
+      options: {
+        expiresIn: process.env.FORGOT_PASSWORD_TOKEN_EXPIRES_IN
+      }
+    })
+  }
   private signAccessTokenAndRefreshToken(user_id: string) {
     return Promise.all([this.signAccessToken(user_id), this.signRefreshToken(user_id)])
   }
@@ -96,21 +108,60 @@ class UserSevice {
   async verifyEmail(user_id: string) {
     const [token] = await Promise.all([
       this.signAccessTokenAndRefreshToken(user_id),
-      databaseService.users.updateOne(
-        { _id: new ObjectId(user_id) },
+      databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
         {
           $set: {
             email_verify_token: '',
             verify: UserVerifyStatus.Verified,
-            updated_at: new Date()
+            updated_at: '$$NOW'
           }
         }
-      )
+      ])
     ])
     const [access_token, refresh_token] = token
     return {
       access_token,
       refresh_token
+    }
+  }
+  async resendVerifyEmail(user_id: string) {
+    const email_verify_token = await this.signEmailVerifyToken(user_id)
+    // gia bo gui email
+    console.log('email_verify_token:', email_verify_token)
+
+    // cap nhap lai gia tri email_verify_token trong document user
+    await databaseService.users.updateOne(
+      { _id: new ObjectId(user_id) },
+      {
+        $set: {
+          email_verify_token
+        },
+        $currentDate: {
+          updated_at: true
+        }
+      }
+    )
+    return {
+      message: USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS
+    }
+  }
+  async forgotPassword(user_id: string) {
+    const forgot_password_token = await this.signForgotPasswordToken(user_id)
+    await databaseService.users.updateOne(
+      { _id: new ObjectId(user_id) },
+      {
+        $set: {
+          forgot_password_token
+        },
+        $currentDate: {
+          updated_at: true
+        }
+      }
+    )
+    // gui email kem duong link den email nguoi dung : http://twitter.com/forgot-password?token=token
+    console.log(`forgot password token: ${forgot_password_token}`)
+    return {
+      message: USERS_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD
     }
   }
 }
