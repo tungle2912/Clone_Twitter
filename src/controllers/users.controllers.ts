@@ -8,7 +8,8 @@ import {
   RegisterReqBody,
   TokenPayload,
   VerifyEmailReqBody,
-  VerifyForgotPasswordReqBody
+  VerifyForgotPasswordReqBody,
+  resetPasswordReqBody
 } from '~/models/requests/User.requests'
 import databaseService from '~/services/database.services'
 import userSevice from '~/services/users.services'
@@ -106,4 +107,23 @@ export const verifyForgotPasswordController = async (
   next: NextFunction
 ) => {
   return res.json({ message: USERS_MESSAGES.VERIFY_FORGOT_PASSWORD_SUCCESS })
+}
+
+export const resetPasswordController = async (
+  req: Request<ParamsDictionary, any, resetPasswordReqBody>,
+  res: Response,
+  next: NextFunction
+) => {
+  const { user_id } = req.decoded_forgot_password_token as TokenPayload
+  const { password } = req.body
+  const result = await userSevice.reserPassword(user_id, password)
+  return res.json(result)
+}
+export const getMeController = async (req: Request, res: Response, next: NextFunction) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const user = await userSevice.getMe(user_id)
+  return res.json({
+    message: USERS_MESSAGES.GET_ME_SUCCESS,
+    result: user
+  })
 }
