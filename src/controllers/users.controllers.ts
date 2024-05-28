@@ -21,7 +21,7 @@ import { UserVerifyStatus } from '~/constants/enums'
 export const loginController = async (req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) => {
   const user = req.user as User
   const user_id = user._id as ObjectId
-  const result = await userSevice.login(user_id.toString())
+  const result = await userSevice.login({ user_id: user_id.toString(), verify: user.verify })
   return res.json({
     message: USERS_MESSAGES.LOGIN_SUCCESS_MESSAGE,
     result
@@ -97,8 +97,8 @@ export const forgotPasswordController = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { _id } = req.user as User
-  const result = await userSevice.forgotPassword((_id as ObjectId).toString())
+  const { _id, verify } = req.user as User
+  const result = await userSevice.forgotPassword({ user_id: (_id as ObjectId).toString(), verify })
   return res.json(result)
 }
 export const verifyForgotPasswordController = async (
@@ -126,4 +126,7 @@ export const getMeController = async (req: Request, res: Response, next: NextFun
     message: USERS_MESSAGES.GET_ME_SUCCESS,
     result: user
   })
+}
+export const updateMeController = async (req: Request, res: Response, next: NextFunction) => {
+  return res.json({})
 }
