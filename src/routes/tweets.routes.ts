@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { createTweetController } from '~/controllers/tweets.controllers'
 import { createTweetValidator } from '~/middlewares/tweets.middlewares'
-import { accessTokenValidator, isUerLoggedInValidator, verifiedUserValidator } from '~/middlewares/users.middlewares'
+import { accessTokenValidator, verifiedUserValidator } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
 
 const tweetsRouter = Router()
